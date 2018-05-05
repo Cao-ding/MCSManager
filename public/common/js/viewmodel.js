@@ -9,29 +9,34 @@
 	MI.listener('ws/open', function (ws) {
 		VIEW_MODEL['websocketStatus'] = {};
 		var webscoketStatus = VIEW_MODEL['websocketStatus'];
-		webscoketStatus['status'] = 'WebSocket 连接正常';
+		webscoketStatus['status'] = '服务器连接正常';
 		webscoketStatus['is'] = true;
-		webscoketStatus['color'] = '#ffffff';
+		webscoketStatus['tcolor'] = '#12ea19';
 		VIEW_MODEL.newVue('websocketStatus', {
 			el: '#websocket'
 		});
 		VIEW_MODEL.newVue('websocketStatus', {
 			el: '#websocket2'
 		});
+		//左上角用户显示
+		VIEW_MODEL.newVue('websocketStatus', {
+			el: '#TitleUser'
+		});
 	});
 
 	MI.listener('ws/close', function (ws) {
+		TOOLS.setHeaderTitle("离线 | 当前与服务器断开..");
 		var webscoketStatus = VIEW_MODEL['websocketStatus'];
-		webscoketStatus['status'] = 'WebSocket 连接断开,请刷新网页重连';
+		webscoketStatus['status'] = '!!! 连接断开 !!!';
 		webscoketStatus['is'] = false;
-		webscoketStatus['color'] = '#f5ea6c';
+		webscoketStatus['tcolor'] = '#ffffff';
 	});
 
 	MI.listener('ws/error', function (ws) {
 		var webscoketStatus = VIEW_MODEL['websocketStatus'];
-		webscoketStatus['status'] = 'WebSocket 连接错误,请刷新网页重连';
+		webscoketStatus['status'] = '!!! 连接错误 !!!';
 		webscoketStatus['is'] = false;
-		webscoketStatus['color'] = '#f5ea6c';
+		webscoketStatus['tcolor'] = '#ffffff';
 	});
 
 	//单页生命周期替换事件
@@ -41,9 +46,17 @@
 		PAGE = new Object();
 	});
 
+
 	//菜单获取
 	MI.routeListener('ws/muem', function (data) {
-		DEBUG && console.log('--- 系统菜单获取成功 ---')
+		//菜单选项选择
+		MI.listener("SideMeumClick", function () {
+			DEBUG && console.log("--- 菜单选项被选择 ---");
+			// MCSERVER.autoColmDo();
+		});
+
+		DEBUG && console.log('--- 系统菜单获取成功 ---');
+
 		MCSERVER.username = data.obj.username;
 		//虚拟的数据接受，让前端数据得到，菜单在前端建筑
 		if (TOOLS.isMaster(MCSERVER.username)) {
@@ -61,21 +74,9 @@
 			methods: {
 				onRedirect: function (link, api) {
 					DEBUG && console.log('菜单处网页开始跳转:' + link);
+					//触发菜单选项点击事件
+					MI.on("SideMeumClick", null);
 					RES.redirectPage(link, api, 'update_page');
-				},
-				onMouse: function ($event, flag) {
-					var $elem = $event.target;
-					if (flag) {
-						//进入
-						$($elem).stop(true, true).animate({
-							'padding-left': '24px'
-						}, 200);
-					} else {
-						//移出
-						$($elem).stop(true, true).animate({
-							'padding-left': '20px'
-						}, 200);
-					}
 				}
 			}
 		});
@@ -84,6 +85,7 @@
 
 	MI.routeListener('index/update', function (data) {
 		MI.routeCopy('SystemUp', data.obj);
+		MI.routeCopy('VersionShow', data.obj);
 	});
 
 	MI.routeListener('center/show', function (data) {
@@ -130,14 +132,20 @@
 	MI.routeListener('server/console/ws', function (data) {
 		var consoleSafe = terminalEncode(data.body);
 		var MinecraftConsole = document.getElementById('TerminalMinecraft');
-		if (MinecraftConsole == undefined) {
-			console.log('NULL')
+		if (MinecraftConsole == null) {
+			console.error('MinecraftConsole is null');
+			return;
 		}
-		MinecraftConsole.innerHTML += consoleSafe;
+		var flag = false;
+		//判断用户是否自己移动了滚轴
 		var BUFF_FONTIER_SIZE_DOWN = MinecraftConsole.scrollHeight - MinecraftConsole.clientHeight;
-		if (MinecraftConsole.scrollTop + 354 >= BUFF_FONTIER_SIZE_DOWN) {
+		flag = (MinecraftConsole.scrollTop + 354 >= BUFF_FONTIER_SIZE_DOWN);
+		//add
+		MinecraftConsole.innerHTML += consoleSafe;
+		//unblive bt ths is t
+		if (flag)
 			MinecraftConsole.scrollTop = MinecraftConsole.scrollHeight;
-		}
+
 	});
 
 	//获取控制台历史记录

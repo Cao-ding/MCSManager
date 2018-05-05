@@ -18,7 +18,20 @@ a:visited {
 a:active {
 	text-decoration: none;
 }
-a,input{outline:none;}
+
+a,
+input {
+	outline: none;
+}
+
+.btn {
+	border-radius: 0px;
+	transition: opacity 1s;
+}
+
+.btn:hover {
+	opacity: 0.5;
+}
 
 /*全局css定义结束*/
 
@@ -29,10 +42,20 @@ a,input{outline:none;}
 	top: 0px;
 	width: 100%;
 	z-index: 102;
+	box-shadow: 0 0 5px 0 rgba(0, 0, 0, .6);
 }
 
-#MasterLogo{
-	letter-spacing: 1.5px;
+/* logo 图片 */
+
+#MasterLogo img {
+	animation: MasterLogoTitle 10s ease infinite;
+	animation-iteration-count: 100;
+}
+
+/* logo 块 */
+
+#MasterLogo:hover {
+	animation: MasterLogoImg 2s;
 }
 
 #SideCol {
@@ -52,13 +75,6 @@ a,input{outline:none;}
 	top: 10px;
 	left: 180px;
 	right: 0px;
-	: ;
-}
-
-@media (max-width:640px) {
-	#websocket{
-		display:none;
-	}
 }
 
 #MainContainer {
@@ -71,15 +87,20 @@ a,input{outline:none;}
 	overflow-y: auto;
 }
 
+/* 右侧容器 */
+
+#ConsoleMain {
+	max-width: 1360px;
+	margin: auto;
+}
 
 /*布局结束*/
-
 
 /*标题*/
 
 .HeaderItem {
 	color: #E5E5E5;
-	line-height: 49px;
+	line-height: 50px;
 	font-size: 14px;
 	margin: 0;
 	float: left;
@@ -88,8 +109,19 @@ a,input{outline:none;}
 	text-align: center;
 }
 
-
 /*标题的右侧菜单*/
+
+.HeaderTitle {
+	display: inline-block;
+	*zoom: 1;
+	overflow: hidden;
+	text-align: center;
+	line-height: 50px;
+	color: rgb(252, 252, 252);
+	font-size: 12px;
+	padding: 0 16px;
+	font-weight: 400;
+}
 
 .HeaderR {
 	float: right;
@@ -100,17 +132,17 @@ a,input{outline:none;}
 	*zoom: 1;
 	overflow: hidden;
 	text-align: center;
-	line-height: 49px;
-	color: white;
+	line-height: 50px;
+	color: rgb(250, 250, 250);
 	font-size: 12px;
 	padding: 0 12px;
 	cursor: pointer;
+	transition: background-color 0.4s;
 }
 
 .HeaderR div:hover {
-	background-color: #005983;
+	background-color: #003c58;
 }
-
 
 /*左侧的菜单*/
 
@@ -134,6 +166,7 @@ a,input{outline:none;}
 	text-align: left;
 	padding-left: 20px;
 	font-size: 12px;
+	transition: background-color 0.5s, margin-left 0.3s;
 }
 
 #SideColMenu a span {
@@ -142,9 +175,9 @@ a,input{outline:none;}
 
 #SideColMenu a:hover {
 	text-decoration: none;
-	background-color: #017EBC;
+	background-color: rgb(1, 126, 188);
+	margin-left: 8px;
 }
-
 
 /*菜单的收缩*/
 
@@ -160,8 +193,13 @@ a,input{outline:none;}
 	border-radius: 2px;
 	cursor: pointer;
 	box-shadow: 1px 2px 2px rgba(0, 0, 0, 0.25);
+	transition: width 0.4s, background-color 0.4s;
 }
 
+#ShowMenu:hover {
+	width: 20px;
+	background-color: rgb(226, 226, 0);
+}
 
 /*针对于单页的首页容器*/
 
@@ -173,9 +211,7 @@ a,input{outline:none;}
 	overflow: auto;
 }
 
-
 /* 可以设置不同的进入和离开动画 */
-
 
 /* 设置持续时间和动画函数 */
 
@@ -191,7 +227,7 @@ a,input{outline:none;}
 .slide-fade-leave-to
 /* .slide-fade-leave-active for <2.1.8 */
 
-{
+	{
 	transform: translateX(10px);
 	opacity: 0;
 }
@@ -205,10 +241,9 @@ a,input{outline:none;}
 .fade-leave-to
 /* .fade-leave-active in below version 2.1.8 */
 
-{
+	{
 	opacity: 0
 }
-
 
 /*信息框*/
 
@@ -226,50 +261,69 @@ a,input{outline:none;}
 	color: #F5F5F5;
 }
 
-
 /*通用的可编辑的菜单项  table*/
-.PropertiesList{
+
+.PropertiesList {
 	font-size: 12px;
 	color: #777777;
-	
 }
 
-.PropertiesList th{
+.PropertiesList th {
 	text-align: center;
 	background-color: #f8f8f8;
-    border-color: #fff;
-    border-bottom: 1px solid #ccc;
-    border-top: 1px solid #ccc;
-    padding: 8px 0px;
-    color: #666;
+	border-color: #fff;
+	border-bottom: 1px solid #ccc;
+	border-top: 1px solid #ccc;
+	padding: 8px 0px;
+	color: #666;
 }
 
-.PropertiesList tr{
+.PropertiesList tr {
 	width: 100%;
 }
+
 .PropertiesList .input-group {
-   margin-bottom: 0px;
+	margin-bottom: 0px;
 }
 
+.font-size-12 {
+	font-size: 12px;
+}
 
-.font-size-12{font-size: 12px;}
-.font-size-10{font-size: 10px;}
-.font-size-14{font-size: 14px;}
+.font-size-10 {
+	font-size: 10px;
+}
 
-.ulInfo li{
+.font-size-14 {
+	font-size: 14px;
+}
+
+.ulInfo li {
 	font-size: 11px;
 	margin-left: -20px;
 }
 
 /*进度条CSS*/
-.Toolscon{
+
+.Toolscon {
 	position: fixed;
-    top: 0px;
-    left: 0px;
-    /*background-color: #00cc06;*/
-    height: 4px;
-    z-index: 999;
-    width: 100%;
-    overflow: hidden;
-    line-height: 3px;
+	top: 0px;
+	left: 0px;
+	/*background-color: #00cc06;*/
+	height: 4px;
+	z-index: 999;
+	width: 100%;
+	overflow: hidden;
+	line-height: 3px;
+}
+
+@media (max-width:640px) {
+	#HeaderInfo {
+		display: none;
+	}
+	.PhoneDisplayNone {
+		display: none;
+		width: 1px;
+		height: 1px;
+	}
 }

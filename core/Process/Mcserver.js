@@ -26,7 +26,7 @@ class MinecraftServer extends ServerProcess {
     }
 
     builder(args) {
-        this.dataModel.addCmd = args.addCmd || ['-server', '-Xincgc'];
+        this.dataModel.addCmd = args.addCmd || [];
 
         this.dataModel.java = args.java || 'java';
         this.dataModel.jarName = args.jarName;
@@ -82,7 +82,7 @@ class MinecraftServer extends ServerProcess {
 
     terminalLog(strLine) {
         this.terminalQueue.push(strLine);
-        if (this.terminalQueue.length > 512) {
+        if (this.terminalQueue.length > MCSERVER.localProperty.terminalQueue_max_length) {
             this.terminalQueue = this.terminalQueue.slice(400);
         }
     }

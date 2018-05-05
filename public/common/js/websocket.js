@@ -15,7 +15,7 @@
 
 	window.WS.init = function (openCallback) {
 		var wsURL = 'websocket/ws?' + RES.TOKEN_NAME + '=' + RES.TOKEN;
-		window.WS = new WebSocket(MCSERVER.URL(wsURL, 'ws://'));
+		window.WS = new WebSocket(MCSERVER.URL(wsURL, MCSERVER.WS_PROTOCOL));
 		var tmp_callback = null;
 		wsHeartBeatPackage(WS); //心跳包定时器开启
 
@@ -38,9 +38,9 @@
 				tmp_callback && tmp_callback();
 				tmp_callback = null;
 			} catch (e) {
-				console.log('Websocket 收到的数据异常:');
-				console.log('收到的数据是:' + e.data)
-				console.log(e)
+				DEBUG && console.log('Websocket 收到的数据异常:');
+				DEBUG && console.log('收到的数据是:' + e.data)
+				DEBUG && console.log(e)
 			}
 		};
 		WS.onerror = function (err) {

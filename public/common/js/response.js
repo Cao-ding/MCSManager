@@ -8,7 +8,7 @@
 	RES.TOKEN_NAME = TOKEN_NAME;
 	RES.TOKEN = null;
 	RES.getToken = function (callback) {
-		//		同源策略可以防止其他域对这里发送一个Ajax请求.
+		//同源策略可以防止其他域对这里发送一个Ajax请求.
 		var _url = MCSERVER.URL("./token?_LoveYouMaster_Time=" + Date.parse(new Date()));
 		$.get(_url, function (data, status) {
 			data = JSON.parse(data);
@@ -76,7 +76,7 @@
 
 	RES.redirectHTML = function (url, key, body, callback) {
 		//静态文件均在 public 目录下，动态文件则在不同API接口
-		var _url = MCSERVER.URL('./public/' + url, 'http://');
+		var _url = MCSERVER.URL('./public/' + url);
 
 		//响应事件函数
 		function responseCallback(response, status, xhr) {
@@ -95,15 +95,25 @@
 		}
 	}
 
-	RES.redirectPage = function (url, key, body, callback) {
+	MI.listener("RedirectPage", function () {
+		//自动菜单更改
+		MCSERVER.autoColmDo();
+	});
 
+	RES.redirectPage = function (url, key, body, callback) {
+		var showUrl = url.replace(".", "");
+		var showKey = key || "Null"
+		TOOLS.setHeaderTitle(["正在加载...."].join(" "));
 		ToolsLoadingStart(function () {
 			MI.rOn('onend');
 			PageLoading();
 			//替換掉原先存在的 函数。防止新的单页没有这些函数而导致代码二次执行
 			MI.rListener('onend', function () {});
 			MI.rListener('onload', function () {});
+			//触发页面切换事件
+			MI.on('RedirectPage', url);
 			RES.redirectHTML(url, key, body, function () {
+				TOOLS.setHeaderTitle(["当前", showUrl, " | ", "接口", showKey].join(" "));
 				MI.on('page/live');
 				//赋予的单页刷新
 				PAGE.refresh = function () {

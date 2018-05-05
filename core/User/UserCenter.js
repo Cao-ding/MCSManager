@@ -1,5 +1,12 @@
-const { User, USER_SAVE_PATH } = require('./User');
-const { md5, createPassword, randomString } = require('./CryptoMine');
+const {
+    User,
+    USER_SAVE_PATH
+} = require('./User');
+const {
+    md5,
+    createPassword,
+    randomString
+} = require('./CryptoMine');
 const fs = require('fs');
 
 const USER_DIR = './' + USER_SAVE_PATH;
@@ -27,8 +34,9 @@ class UserCenter {
         if (masterUserCounter == 0) {
             this.userList['#master'] = this.register('#master', '123456');
             MCSERVER.log('========================================================');
-            MCSERVER.log('收到命令用户机制初始化,创建账号: #master 密码 123456');
+            MCSERVER.log('收到命令用户机制初始化 | 创建账号: #master 密码 123456');
             MCSERVER.log('========================================================');
+            MCSERVER.log('请注意！凡是以 # 符号开头的用户名,均视为管理员账号');
         }
 
     }
@@ -66,10 +74,12 @@ class UserCenter {
         this.deleteUser(username);
     }
 
-    loginCheck(username, password, truecb, falsecb, md5key) {
+    loginCheck(username, password, truecb, falsecb, md5key, notSafeLogin = false) {
         if (this.userList.hasOwnProperty(username) && this.userList[username] != undefined) {
             let loginUser = this.userList[username];
             try {
+                //BUG Note: loginUser 同步问题
+                //第二次审查，否定
                 loginUser.load();
             } catch (e) {
                 falsecb && falsecb();
@@ -77,17 +87,20 @@ class UserCenter {
                 return false;
             }
             loginUser.updateLastDate();
-            //login登陆时使用 md5传码方式 
-            if (md5key) {
+
+            // 目前只准许 登陆时使用 md5传码方式 ，不准传输明文
+            if (md5key && !notSafeLogin) {
                 let userMd5 = loginUser.getPasswordMD5();
                 let md5Passworded = md5(userMd5 + md5key);
-                return md5Passworded == password ? truecb && truecb(loginUser) : falsecb && falsecb();
+                return md5Passworded === password ? truecb && truecb(loginUser) : falsecb && falsecb();
             }
-            //一般模式
-            if (loginUser.isPassword(password)) {
+
+            // 一般模式 供ftp 等登录
+            if (notSafeLogin && loginUser.isPassword(password)) {
                 truecb && truecb(loginUser);
                 return true;
             }
+
         }
         falsecb && falsecb();
         return false;
@@ -119,6 +132,8 @@ class UserCenter {
         let data = {};
         let tmp = null;
         for (let k in this.userList) {
+            data = {}; //BUG Note: 引用初始化
+
             if (!this.userList[k]) continue;
             tmp = this.userList[k].dataModel;
             //删除掉一些不可泄露的信息
@@ -137,6 +152,17 @@ class UserCenter {
         let tmp = 0;
         for (let k in this.userList) tmp++;
         return tmp;
+    }
+
+    saveAllUser() {
+        let objs = this.userList;
+        for (let k in objs) {
+            objs[k].save();
+        }
+    }
+
+    returnUserObjList() {
+        return this.userList;
     }
 
 

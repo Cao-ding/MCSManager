@@ -1,3 +1,5 @@
+const loginedContainer = require('./LoginedContainer');
+
 function randomString(len) {
     len = len || 32;
     var $chars = 'ABCDEFGHIJKLNMOPQRSTUVWXYZabcdefghijklnmopqrstuvwxyz1234567890_';
@@ -24,8 +26,9 @@ function defaultFalseCallBack(req, res, ResponseKey, ResponseValue, notAjaxRedir
 module.exports.randomString = randomString;
 
 module.exports.needLogin = (req, res, trueCallBack, falseCallBack) => {
-    if (req.session['login']) {
-        if (req.session['login'] === true) {
+    let username = req.session['username'];
+    if (req.session['login'] && loginedContainer.isLogined(req.sessionID, username)) {
+        if (req.session['login'] === true && username) {
             trueCallBack && trueCallBack();
             return true;
         }
@@ -34,14 +37,18 @@ module.exports.needLogin = (req, res, trueCallBack, falseCallBack) => {
     return false;
 }
 
-// module.exports.wsNeedLogin = (ws) => {
-
-// }
 const counter = require('../core/counter');
 
 module.exports.isMaster = (wsSession, notPermssionCounter) => {
-    if (wsSession.username) {
-        if (wsSession.username.substr(0, 1) == '#') {
+    if (!wsSession.username || typeof wsSession.username != 'string') {
+        return false;
+    }
+    if (!loginedContainer.isLogined(wsSession.sessionID, wsSession.username)) {
+        return false;
+    }
+    let username = wsSession.username.trim() || '';
+    if (username) {
+        if (username.substr(0, 1) == '#') {
             return true;
         }
     }
@@ -89,3 +96,12 @@ module.exports.isCanServer = (userName, serverName) => {
     return false;
 }
 
+module.exports.isOnline = (username) => {
+    let onlineusers = MCSERVER.onlineUser;
+    for (let k in onlineusers) {
+        if (k === username) {
+            return true;
+        }
+    }
+    return false;
+}
